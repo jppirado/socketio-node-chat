@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="stylev1.css">
+  <title>Chat js</title>
+  <style>
+body{
+  margin: 0;
+  padding: 0;
+}
+
+.box{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column
+}
+
+div #chat{
+  width: 300px;
+  height: 500px;
+  border: 2px solid black;
+  background-color: antiquewhite;
+}
+#name , #message{
+  width: 300px;
+  height: 30px;
+}
+button{
+  width: 300px;
+  height: 30px;
+  background-color: green;
+}
+
+  </style>
+</head>
+<body>
+  <div class="box">
+    <input type="text"  id='name' placeholder="Digite seu nome"/>
+    <p id="chat"></p>
+    <input type="text" id="message" placeholder="Sua mensagem">
+    <button type="button" onclick="sendMessage()">Send</button>
+  </div>
+  <script src="http://localhost:3000/socket.io/socket.io.js"> </script>
+  <script> 
+
+    const socket = io('http://localhost:3000')
+
+    function showMessages(data){
+        document.getElementById('chat').innerHTML += "<strong>"+data.author +": "+"</strong> " + data.message +"</br>"
+    }
+
+    function showMessagesLoop(data){
+          document.getElementById('chat').innerHTML += "<strong>"+data.author +": "+"</strong> " + data.message +"</br>"
+    }
+
+    
+    function sendMessage(){
+      var author = document.getElementById('name').value
+      var message = document.getElementById('message').value
+        document.getElementById('message').value = '';
+      var newMessage = {
+        author:author,
+        message:message
+      }
+      socket.emit('send' , newMessage)
+    }
+
+    socket.on('upDate' , data=>{
+      //data.forEach( m => showMessages(m) )
+      showMessages(data) 
+    })
+
+    socket.on('sendAllMessages' , data =>{
+      data.forEach(m => showMessagesLoop(m))
+    })
+
+  </script>
+</body>
+</html>l
